@@ -5,6 +5,30 @@ source $(dirname $0)/version
 
 cd $(dirname $0)/..
 
+ARCH=amd64
+
+case "$(uname -m)" in
+  x86_64*)
+    ARCH=amd64
+    ;;
+  i?86_64*)
+    ARCH=amd64
+    ;;
+  amd64*)
+    ARCH=amd64
+    ;;
+  aarch64*)
+    ARCH=arm64
+    ;;
+  arm64*)
+    ARCH=arm64
+    ;;
+  *)
+    echo "Unsupported host arch. Must be x86_64, arm64." >&2
+    exit 1
+    ;;
+esac
+
 mkdir -p bin
 [ "$(uname)" != "Darwin" ] && LINKFLAGS="-linkmode external -extldflags -static -s"
-CGO_ENABLED=0 go build -ldflags "-X main.VERSION=$VERSION $LINKFLAGS -linkmode external -extldflags -static -s" -o bin/share-mnt
+GOARCH=$ARCH CGO_ENABLED=0 go build -ldflags "-X main.VERSION=$VERSION $LINKFLAGS -linkmode external -extldflags -static -s" -o bin/share-mnt
